@@ -61,3 +61,81 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 rmse=sqrt(mean_squared_error(test['Production'],test['Predictions']))
 print(rmse)
+
+sa
+1. import tambahan sns sama nltk, nltk.download('puntk')
+2. from nltk.tokenize import word_tokenize
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import Sequential
+from keras.layers import Embedding, LSTM, Dense, Dropout
+from sklearn.preprocessing import LabelEncoder
+import warnings
+warnings.filterwarnings('ignore')
+sns.set()
+3. read dataset
+4. imdb.sentiment.value_counts()
+5. for loop dan diword tokenize yaitu dipisahin kata per kata
+corpus = []
+for text in imdb['review']:
+  words = [word.lower() for word in word_tokenize(text)]
+  corpus.append(words)
+6. print len sama shape
+7. train test split dari shapenya
+train_size = int(imdb.shape[0] * 0.8)
+X_train = imdb.review[:train_size]
+y_train = imdb.sentiment[:train_size]
+
+X_test = imdb.review[train_size:]
+y_test = imdb.sentiment[train_size:]
+8. Lakukan Tokenizer yaitu membuat textnya jadi array angka
+tokenizer = Tokenizer(num_words)
+tokenizer.fit_on_texts(X_train)
+X_train = tokenizer.texts_to_sequences(X_train)
+X_train = pad_sequences(X_train, maxlen=128, truncating='post', padding='post')
+
+X_train[0], len(X_train[0])
+
+X_test = tokenizer.texts_to_sequences(X_test)
+X_test = pad_sequences(X_test, maxlen=128, truncating='post', padding='post')
+
+X_test[0], len(X_test[0])
+
+print(X_train.shape, y_train.shape)
+print(X_test.shape, y_test.shape)
+9. diLabelEncoder()
+le = LabelEncoder()
+y_train = le.fit_transform(y_train)
+y_test = le.transform(y_test)
+10. buat modelnya, summary, dan fit
+model = Sequential()
+
+model.add(Embedding(input_dim=num_words, output_dim=100,
+                    input_length=128, trainable=True))
+model.add(LSTM(100, dropout=0.1, return_sequences=True))
+model.add(LSTM(100, dropout=0.1))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+model.summary()
+
+history = model.fit(X_train, y_train, epochs=5, batch_size=64, validation_data=(X_test, y_test))
+
+11. Plotting
+plt.figure(figsize=(16,5))
+epochs = range(1, len(history.history['accuracy'])+1)
+plt.plot(epochs, history.history['loss'], 'b', label='Training Loss', color'red')
+plt.plot(epochs, history.history['val_loss'], 'b', label='Validation Loss')
+plt.legend()
+plt.show()
+
+satu lagi yang accuracy
+
+12. predict masukin sentence
+validation_sentence = ['']
+validation_sentence_tokened = tokenizer.texts_to_sequences(validation_sentence)
+validation_sentence_padded = pad_sequences(validation_sentence_tokened, maxlen=128,
+                                           truncating='post', padding='post')
+print(validation_sentence[0])
+print("Probability of Positive: {}".format(model.predict(validation_sentence_padded)[0]))
