@@ -7,14 +7,14 @@
 6. train test pake iloc
 7. normalize pake minmaxscaler
 8. from keras.preprocessing.sequence import TimeseriesGenerator
-9. # define generator
+9. define generator
 n_input = 3
 n_features = 1
 generator = TimeseriesGenerator(scaled_train, scaled_train, length=n_input, batch_size=1)
 10. X,y = generator[0]
 print(f'Given the Array: \n{X.flatten()}')
 print(f'Predict this y: \n {y}')
-11. # We do the same thing, but now instead for 12 months
+11. We do the same thing, but now instead for 12 months
 n_input = 12
 generator = TimeseriesGenerator(scaled_train, scaled_train, length=n_input, batch_size=1)
 12. import sequential dari keras.models, dense sama LSTM dari keras.layers
